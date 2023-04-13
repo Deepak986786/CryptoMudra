@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Coins from "./Coins";
+import Footer from "./components/Footer";
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -84,6 +85,7 @@ const App = () => {
           </table>
         </div>
       </div>
+      <Footer/>
     </>
   );
 };
