@@ -16,3 +16,10 @@ code {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.gradient{
+  color: transparent;
+  background-image: linear-gradient(to bottom, #32af16, #e237e2);
+  background-clip: text;
+  
+}
