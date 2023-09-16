@@ -1,0 +1,38 @@
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - main  # Change this to the branch you want to deploy from
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 6.11.0
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: costingdbui  # Set to your Angular app's directory
+
+      - name: Build Angular app
+        run: ng build --prod
+        working-directory: costingdbui  # Set to your Angular app's directory
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: <your-app-name>  # Replace with your Azure App Service name
+          slot-name: <optional-slot-name>  # Replace with the deployment slot name (optional)
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
