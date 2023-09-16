@@ -1,42 +1,47 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import Coins from "./Coins";
 import Footer from "./components/Footer";
+import Product from "./product";
+import "./App.css";
 
 const App = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState([]);
-  const uri =
-    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=false";
+  const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
 
-
-  const getdata = () => {
-    axios
-      .get(uri)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const getProducts = () => {
+    fetch("https://dummyjson.com/products?limit=100")
+      .then((res) => res.json())
+      .then((products) => setProducts(products.products))
+      .then(console.log(products));
   };
 
   useEffect(() => {
     setTimeout(() => {
-      getdata();
+      // getdata();
+      getProducts();
     }, 100);
   }, []);
 
   const handleChangeofinputvalue = (e) => {
     setSearch(e.target.value);
   };
-  console.log(search.toString().toLowerCase());
+  // console.log(search.toString().toLowerCase());
 
-  const filteredCoinonsearch = data.filter((coin) =>
-    coin.name.toString().toLowerCase().includes(search.toString().toLowerCase())
-  );
+  // const filteredCoinonsearch = data.filter((coin) =>
+  //   coin.name.toString().toLowerCase().includes(search.toString().toLowerCase())
+  // );
 
-  console.log(data);
+  // console.log(data);
+
+  const selectedPageHandler = (selectedPage) => {
+    debugger;
+    if (selectedPage < 1 || selectedPage > products.length / 10) {
+      alert("at endpoint");
+      return;
+    }
+    setPage(selectedPage);
+  };
   return (
     <>
       <div className="bg-gradient-to-r from-green-200 to-indigo-600 grid grid-cols-1 sm:grid-cols-2 p-5 justify-center align-items-center">
@@ -45,6 +50,7 @@ const App = () => {
         </div>
         <div className="search grid justify-center align-items-center p-1 rounded-sm">
           <input
+            name="search"
             type="text"
             className=""
             placeholder="Search"
@@ -54,7 +60,7 @@ const App = () => {
       </div>
       <div>
         <div className="table-responsive">
-          <table className="min-w-full">
+          {/* <table className="min-w-full">
             <thead>
               <tr className="m-2 bg-gray-400">
                 <th className="m-2 p-4">#</th>
@@ -69,6 +75,7 @@ const App = () => {
               {filteredCoinonsearch.map((curEle, index) => {
                 return (
                   <Coins
+                    key={index}
                     rank={index}
                     id={curEle.id}
                     name={curEle.name}
@@ -81,10 +88,54 @@ const App = () => {
                 );
               })}
             </tbody>
-          </table>
+          </table> */}
+        </div>
+
+        <div className="p-container">
+          {products.slice(page * 10 - 10, page * 10).map((product, index) => {
+            return (
+              <Product
+                key={index}
+                title={product.title}
+                description={product.description}
+                imageUrl={product.thumbnail}
+              />
+            );
+          })}
         </div>
       </div>
-      <Footer/>
+      {products.length > 0 && (
+        <div className="pagination">
+          <span
+            onClick={() => selectedPageHandler(page - 1)}
+            className={
+              page > 1 ? " " : "pagination__disabled"
+            }
+          >
+            ⇐
+          </span>
+          {[...Array(products.length / 10)].map((_, i) => {
+            return (
+              <span
+                key={i}
+                onClick={() => selectedPageHandler(i + 1)}
+                className={page === i + 1 ? "pagination__selected" : ""}
+              >
+                {i + 1}
+              </span>
+            );
+          })}
+          <span
+            onClick={() => selectedPageHandler(page + 1)}
+            className={
+              page < products.length / 10 ? " " : "pagination__disabled"
+            }
+          >
+            ⇒
+          </span>
+        </div>
+      )}
+      <Footer />
     </>
   );
 };
